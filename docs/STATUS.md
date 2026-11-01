@@ -23,7 +23,7 @@ Status labels:
 | llama.cpp build-path evaluation | Completed (research/docs) | Phase 3, Task 1; upstream Termux and Android NDK paths compared in [LLAMA_CPP_EVALUATION.md](LLAMA_CPP_EVALUATION.md); no build performed |
 | Local inference interface | Android Verified (user-confirmed) | Phase 3, Task 2; user confirmed the latest Termux verification was all good on 2026-11-01; backend-neutral model/request/result types, protocol and typed errors; concrete CLI adapter added later in Task 4 |
 | Native llama.cpp build | Android Verified (CLI smoke test) | Phase 3, Task 3; user built upstream llama.cpp natively in Termux on ARM64 with Clang 21.1.8/CMake 4.4.5; `llama-cli --version` and `--help` succeeded; no model loaded and no inference test yet |
-| llama.cpp CLI adapter | Implemented; automated tests added | Phase 3, Task 4; `LlamaCppCliBackend` implements the existing protocol with local GGUF validation, safe subprocess arguments, timeout/error mapping and output handling; Termux verification pending |
+| llama.cpp CLI adapter | Android Verified; Task 4 accepted | User's Termux run: all 34 repository tests passed; installed CLI help confirmed every adapter flag; explicit executable discovery returned `Available: True`. This does not verify GGUF loading or inference. |
 | Story generation | Planned | Phase 4 |
 | Character and continuity engine | Planned | Phase 5 |
 | Story analysis and scene planning | Planned | Phase 6 |
@@ -49,9 +49,9 @@ Status labels:
 - Observed total memory: 12,188,905,472 bytes; this is total physical memory, not the application's safe memory budget.
 - Direct device check: `getprop ro.build.version.release` = 15 and `getprop ro.build.version.sdk` = 35 (2026-11-01). This supersedes the earlier detector's API 24 report for OS identification; investigate the detector discrepancy separately.
 - GitHub Actions CI: not confirmed in this status update.
-- llama.cpp adapter: implementation and mocked-process tests added in Phase 3, Task 4. GitHub Actions run 12 passed all 34 repository tests on commit `c785f4f` (2026-11-01); this is CI evidence, not an Android device test. No actual GGUF model load or generation has been run; Termux verification is pending.
+- llama.cpp adapter: Phase 3, Task 4; user pasted Termux results on 2026-11-01 confirming all 34 repository tests passed, all adapter CLI flags are present in the installed `llama-cli --help`, and explicit executable discovery returned `Available: True`. This is device verification of tests, CLI option compatibility and executable discovery. No actual GGUF model load or text generation has been run.
 - Production capabilities: no story, model inference, TTS, image generation or video production engine is claimed as implemented.
 
 ## Next task
 
-**Next: verify Phase 3, Task 4 on Termux.** The adapter code and mocked subprocess tests are committed; run the full test suite and a local executable-discovery check on the user's device. No GGUF model was loaded; actual inference remains unverified. Keep upstream source/build files outside this repository.
+**Next: Phase 3, Task 5 — local model registry and explicit local import.** Add persistent metadata for locally managed GGUF models (identity, path, format, size, SHA-256, license/source/attribution and integrity state), with file validation and corruption/missing-file tests. Keep imports local-only for this task: no automatic downloads, network fallback, or model selection without explicit user consent.

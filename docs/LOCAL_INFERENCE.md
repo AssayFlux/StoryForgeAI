@@ -45,6 +45,12 @@ backend.unload_model()
 - Automated tests mock the subprocess; actual model loading and inference still
   require a local GGUF file and device verification.
 
+## Termux verification (2026-11-01)
+
+The user ran `python -m unittest discover -s tests -v` in the StoryForgeAI checkout: **34 tests passed**. They also checked the locally built `$HOME/src/llama.cpp/build/bin/llama-cli --help`; the output confirmed all flags used by `LlamaCppCliBackend`: `--system-prompt`, `--single-turn`, `--no-display-prompt`, `--no-show-timings`, `--simple-io`, `--n-predict`, `--top-p`, and `--threads`. Finally, constructing `LlamaCppCliBackend` with that explicit executable path returned `Available: True`.
+
+This is real-device verification of the repository suite, CLI option compatibility, and executable discovery. It is **not** a model-load or inference test: no GGUF file was selected, no generated tokens were observed, and offline inference remains unverified.
+
 ## Contract
 
 - `ModelSpec` identifies a model already stored locally.
