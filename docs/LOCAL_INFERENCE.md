@@ -90,6 +90,7 @@ python -m unittest discover -s tests -v
 ```
 
 The registry tests use small synthetic GGUF-header fixtures, not real model
-weights. Device verification must confirm migration, persistence, file
-integrity checks and no unexpected file movement. No real GGUF model has yet
-been loaded or used for inference.
+weights. The user confirmed all 43 repository tests passed on Termux on
+2026-11-01, accepting the registry's migration, persistence, validation and
+integrity test coverage. No real GGUF model has yet been downloaded, loaded,
+or used for inference.
