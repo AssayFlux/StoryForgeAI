@@ -168,8 +168,8 @@ Work strictly in order. Each numbered phase is a milestone, not permission to sk
 - Acceptance: tests pass on device; missing platform information is non-fatal; no unexpected shell/network side effects; storage/database tests pass on device.
 
 ### Phase 3 — Local AI runtime (llama.cpp / GGUF)
-- Inspect current ARM64/Termux build options and supported packages.
-- Add a runtime adapter interface before binding the application to a particular binary.
+**Task 1: Build-path evaluation — completed as a documentation/research task.** The current upstream guidance supports native Termux builds; see [LLAMA_CPP_EVALUATION.md](LLAMA_CPP_EVALUATION.md). No build or model was installed as part of this evaluation.
+**Next task: add a backend-neutral runtime adapter interface before binding the application to a particular binary.**
 - Build or install only through documented, reproducible steps; no unverified install claims.
 - Add local model registry, explicit import/download, license metadata, checksum and integrity validation.
 - Benchmark small candidate models on device; record peak memory, tokens/sec, startup time, heat and battery observations.
