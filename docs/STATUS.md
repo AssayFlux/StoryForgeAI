@@ -36,7 +36,7 @@ Status labels:
 | Subtitles and synchronization | Planned | Phase 11 |
 | FFmpeg video assembly | Planned | Phase 12 |
 | YouTube metadata and thumbnails | Planned | Phase 13 |
-| Android mobile application | Planned | Phase 14 |
+| Android mobile application | Planned | Phase 14; includes required in-app Downloads / Models & Components manager backed by SQLite; large model/resource payloads are opt-in downloads outside the APK. Specification: [IN_APP_COMPONENT_DOWNLOADS.md](IN_APP_COMPONENT_DOWNLOADS.md). |
 | Performance, reliability and release | Planned | Phase 15 |
 | Lightweight local image/video AI experiments | Planned | Phase 16; optional and benchmark-gated |
 
@@ -68,3 +68,8 @@ Status labels:
 - Selection is a benchmark candidate only, not a production default. No model file has been downloaded, loaded, or benchmarked.
 - The user's latest device measurements are a preflight snapshot, not a persistent safety guarantee. Recheck available memory and free space immediately before download and inference.
 - Explicit user approval is required before downloading the approximately 1.12 GB model. Keep weights in `$HOME/models`, never in the Git repository.
+
+
+## Product requirement recorded — in-app component downloads
+
+On 2026-11-01 the user requested that, when the Android APK is built, its options include in-app download buttons for large AI models and supported system/resource components, with component/download state stored in the app database. This is now a required Phase 14 feature, specified in [IN_APP_COMPONENT_DOWNLOADS.md](IN_APP_COMPONENT_DOWNLOADS.md). It is a documented requirement only; no downloader UI, download service or new database tables are claimed implemented. Continue the current Phase 3 real-inference task in roadmap order; implement the catalog/download/install tables and Android UI in Phase 14. Large model/data files stay outside the APK and SQLite; only metadata/state is stored in SQLite. Arbitrary executable code and Android OS packages must not be downloaded dynamically by this manager.

@@ -134,6 +134,8 @@ Investigate local image generation, frame interpolation, motion transfer, and co
 
 ## 5. Data model and database plan
 
+**Android in-app downloads are a required Phase 14 capability.** The app must provide an in-app Downloads / Models & Components area with explicit download/update/remove actions for large optional models and resource packs. Download state, catalog metadata, licenses and verified installation records belong in SQLite; binaries remain files. See [IN_APP_COMPONENT_DOWNLOADS.md](IN_APP_COMPONENT_DOWNLOADS.md) for the required UX, proposed schema, safety rules and acceptance criteria. Do not bundle large model weights into the APK, and do not dynamically download executable code as if it were model data.
+
 SQLite schema will be introduced early, before substantial generation features depend on it. Initial entities should include:
 
 - `projects`, `project_settings`
@@ -142,6 +144,7 @@ SQLite schema will be introduced early, before substantial generation features d
 - `scenes`, `shots`, `storyboards`
 - `assets`, `asset_usages`, `asset_provenance`
 - `models`, `model_files`, `model_licenses`
+- `component_catalog`, `component_downloads`, `installed_components` (Phase 14 migration; see [IN_APP_COMPONENT_DOWNLOADS.md](IN_APP_COMPONENT_DOWNLOADS.md))
 - `generation_jobs`, `pipeline_steps`, `job_events`
 - `voice_profiles`, `audio_tracks`, `subtitle_tracks`
 - `timelines`, `render_jobs`, `exports`
@@ -220,8 +223,10 @@ Work strictly in order. Each numbered phase is a milestone, not permission to sk
 
 ### Phase 14 — Android mobile application
 - Mobile project dashboard, editors, timeline, model manager, job queue, preview and settings.
+- **Required in-app Downloads / Models & Components option:** provide user-triggered Download, Update and Remove actions for large optional GGUF models, offline TTS voices, image models and licensed resource packs. Show size, source, version, license, compatibility, checksum, storage requirements and progress; persist catalog/download/install state in SQLite; verify SHA-256 before atomic installation; support safe pause/resume/retry/recovery and Wi-Fi-only preference. Large weights/data stay outside the APK. See [IN_APP_COMPONENT_DOWNLOADS.md](IN_APP_COMPONENT_DOWNLOADS.md).
+- Package native executable code/libraries in the APK/AAB or use approved platform delivery mechanisms; never create a generic downloader for arbitrary executable code or Android system packages.
 - Select and validate app framework/packaging path; bridge to core engines without duplicating business logic.
-- Acceptance: installable app on target Android version, local project workflows, permissions, lifecycle/recovery and offline operation verified.
+- Acceptance: installable app on target Android version, local project workflows, permissions, lifecycle/recovery and offline operation verified; in-app component catalog/download manager passes the download, integrity, storage, recovery, database and offline acceptance checklist in [IN_APP_COMPONENT_DOWNLOADS.md](IN_APP_COMPONENT_DOWNLOADS.md).
 
 ### Phase 15 — Optimization, reliability and production release
 - Profile memory, CPU, heat, battery, storage and render time.
