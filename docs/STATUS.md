@@ -49,7 +49,7 @@ Status labels:
 - Native llama.cpp build: user pasted successful Termux output on 2026-11-01. Upstream checkout built for Android aarch64 with Clang 21.1.8; `llama-cli --version` reported `0.8.0-dev` (build 1, ggml commit `a91eab6`) and `--help` printed CLI usage. This verifies native build and executable startup, not model loading or inference.
 - Observed total memory: 12,188,905,472 bytes; this is total physical memory, not the application's safe memory budget.
 - Direct device check: `getprop ro.build.version.release` = 15 and `getprop ro.build.version.sdk` = 35 (2026-11-01). This supersedes the earlier detector's API 24 report for OS identification; investigate the detector discrepancy separately.
-- GitHub Actions CI: not confirmed in this status update.
+- GitHub Actions CI: run #17 on commit `90607c0` completed successfully; all 43 tests passed on GitHub Actions with Python 3.12.
 - llama.cpp adapter: Phase 3, Task 4; user pasted Termux results on 2026-11-01 confirming all 34 repository tests passed, all adapter CLI flags are present in the installed `llama-cli --help`, and explicit executable discovery returned `Available: True`. This is device verification of tests, CLI option compatibility and executable discovery. No actual GGUF model load or text generation has been run.
 - Model registry: automated tests cover schema migration, registration, checksum/provenance persistence, invalid inputs, duplicate records, file tampering/missing files and SQLite integrity. Tests have not yet been run on the user's Termux device. Synthetic GGUF fixtures are used; no actual model weights are downloaded or loaded.
 - Production capabilities: no story, model inference, TTS, image generation or video production engine is claimed as implemented.
