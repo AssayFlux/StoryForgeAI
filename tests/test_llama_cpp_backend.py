@@ -67,8 +67,12 @@ class LlamaCppCliBackendTests(unittest.TestCase):
         with self.assertRaises(ModelLoadError):
             backend.generate(GenerationRequest("hello"))
 
+    def test_context_size_must_be_positive(self):
+        with self.assertRaisesRegex(ValueError, "context_size"):
+            self.make_backend(context_size=0)
+
     def test_generate_builds_argument_list_and_returns_result(self):
-        backend = self.make_backend(threads=2)
+        backend = self.make_backend(threads=2, context_size=2048)
         self.load(backend)
         request = GenerationRequest(
             "Write a story; do not interpret shell syntax: $(id)",
@@ -84,11 +88,15 @@ class LlamaCppCliBackendTests(unittest.TestCase):
         self.assertIn("48", command)
         self.assertIn("17", command)
         self.assertIn("2", command)
+        self.assertIn("--ctx-size", command)
+        self.assertIn("2048", command)
         self.assertEqual(options["stdin"], subprocess.DEVNULL)
         self.assertEqual(result.text, "A short generated story.")
         self.assertEqual(result.backend, "llama.cpp-cli")
         self.assertEqual(result.finish_reason, "completed")
         self.assertEqual(result.metadata["model_id"], "tiny")
+        self.assertEqual(result.metadata["context_size"], 2048)
+        self.assertEqual(result.metadata["threads"], 2)
 
     def test_stop_sequences_are_applied_to_captured_text(self):
         backend = self.make_backend()

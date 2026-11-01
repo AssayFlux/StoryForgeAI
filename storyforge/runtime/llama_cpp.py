@@ -32,6 +32,7 @@ class LlamaCppCliBackend:
         executable: str | Path = "llama-cli",
         *,
         threads: int | None = None,
+        context_size: int | None = None,
         timeout_seconds: float = 600.0,
         runner: CommandRunner = subprocess.run,
     ) -> None:
@@ -40,10 +41,13 @@ class LlamaCppCliBackend:
             raise ValueError("executable must not be empty")
         if threads is not None and threads < 1:
             raise ValueError("threads must be at least 1")
+        if context_size is not None and context_size < 1:
+            raise ValueError("context_size must be at least 1")
         if timeout_seconds <= 0:
             raise ValueError("timeout_seconds must be positive")
         self._executable = executable_text
         self._threads = threads
+        self._context_size = context_size
         self._timeout_seconds = timeout_seconds
         self._runner = runner
         self._model: ModelSpec | None = None
@@ -121,6 +125,8 @@ class LlamaCppCliBackend:
             command.extend(["--seed", str(request.seed)])
         if self._threads is not None:
             command.extend(["--threads", str(self._threads)])
+        if self._context_size is not None:
+            command.extend(["--ctx-size", str(self._context_size)])
 
         started = time.monotonic()
         try:
@@ -178,6 +184,8 @@ class LlamaCppCliBackend:
                 "executable": executable,
                 "model_id": self._model.model_id,
                 "exit_code": completed.returncode,
+                "context_size": self._context_size,
+                "threads": self._threads,
             },
         )
 

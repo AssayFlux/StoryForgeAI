@@ -25,6 +25,7 @@ Status labels:
 | Native llama.cpp build | Android Verified (CLI smoke test) | Phase 3, Task 3; user built upstream llama.cpp natively in Termux on ARM64 with Clang 21.1.8/CMake 4.4.5; `llama-cli --version` and `--help` succeeded; no model loaded and no inference test yet |
 | llama.cpp CLI adapter | Android Verified; Task 4 accepted | User's Termux run: all 34 repository tests passed; installed CLI help confirmed every adapter flag; explicit executable discovery returned `Available: True`. This does not verify GGUF loading or inference. |
 | Local model registry | Android Verified; Task 5 accepted | Phase 3, Task 5: SQLite schema v2; explicit local GGUF registration; license/source/attribution metadata; streaming SHA-256; on-demand missing/modified/invalid checks. User confirmed all 43 repository tests passed on Termux. No real model downloaded or loaded. |
+| Phase 3 model candidate | Selected; download pending approval | Official Qwen Q4_K_M candidate, immutable repository revision, exact file size and publisher SHA-256 recorded in `MODEL_CANDIDATES.md`; model weights are not stored in Git. |
 | Story generation | Planned | Phase 4 |
 | Character and continuity engine | Planned | Phase 5 |
 | Story analysis and scene planning | Planned | Phase 6 |
@@ -56,4 +57,13 @@ Status labels:
 
 ## Next task
 
-**Current task: Phase 3, Task 6 — select and benchmark a small local GGUF candidate, then verify real offline inference.** Task 5 is accepted: the user confirmed all 43 repository tests passed on Termux. No model has been downloaded or loaded. Candidate selection remains subject to publisher/license/provenance review, a check of the actual target filesystem and current memory, and explicit user approval before download.
+**Current task: Phase 3, Task 6 — benchmark the pinned Qwen GGUF candidate and verify real offline inference.** Candidate selection and provenance review are recorded in [MODEL_CANDIDATES.md](MODEL_CANDIDATES.md). The exact official file is pinned by repository revision and SHA-256. The user's latest device check (2026-11-01) showed 6,849,160 kB available RAM and 195 GB free on the filesystem backing Termux paths; refresh both before loading. No model has been downloaded or loaded. Explicit user approval is still required before download. After approval: acquire outside Git, verify SHA-256, run bounded-context inference offline, measure resource/performance behavior, and register the verified local file.
+
+
+## Phase 3, Task 6 — candidate decision
+
+- Selected benchmark candidate: Qwen2.5-1.5B-Instruct-GGUF, Q4_K_M, from the official Qwen publisher repository.
+- Immutable source revision, exact filename, byte size, license, and expected SHA-256 are recorded in [MODEL_CANDIDATES.md](MODEL_CANDIDATES.md).
+- Selection is a benchmark candidate only, not a production default. No model file has been downloaded, loaded, or benchmarked.
+- The user's latest device measurements are a preflight snapshot, not a persistent safety guarantee. Recheck available memory and free space immediately before download and inference.
+- Explicit user approval is required before downloading the approximately 1.12 GB model. Keep weights in `$HOME/models`, never in the Git repository.

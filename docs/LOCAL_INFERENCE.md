@@ -81,6 +81,49 @@ weights; it uses bounded memory. Registration is local-only and performs no
 network request. A registered model is not automatically selected for
 inference; model selection remains a separate explicit action.
 
+## Phase 3 benchmark candidate (not downloaded)
+
+The current benchmark candidate is documented in [MODEL_CANDIDATES.md](MODEL_CANDIDATES.md):
+
+- Publisher repository: `Qwen/Qwen2.5-1.5B-Instruct-GGUF` (official Qwen account)
+- Model: Qwen2.5-1.5B-Instruct, 1.54B parameters, Q4_K_M quantization
+- Exact file: `qwen2.5-1.5b-instruct-q4_k_m.gguf`
+- Pinned repository revision: `91cad51170dc346986eccefdc2dd33a9da36ead9`
+- Exact file size: 1,117,320,736 bytes
+- Expected SHA-256: `6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e`
+- License: Apache-2.0
+
+This is a test candidate, not an approved default model. The model weights must
+live outside Git, for example under `$HOME/models`. Do not download until the
+user explicitly approves. After approval, download from the pinned revision,
+verify the full SHA-256 before registration, then register the existing file
+with `ModelRegistry`. A matching filename alone is not sufficient provenance.
+
+### Device benchmark protocol
+
+1. Refresh `MemAvailable` and free space on the exact model destination filesystem.
+2. Record Android version/API, device/SoC, battery percentage, temperature if
+   available, llama.cpp version/commit, and CPU thread setting.
+3. Use a bounded context of 2,048 tokens and at most 64 generated tokens for the
+   first smoke test. Confirm the installed CLI supports the context-size flag
+   before running; do not silently assume flags from a different llama.cpp build.
+4. Measure cold startup/model-load time, prompt-processing throughput,
+   generation throughput, and peak process RSS. Repeat a short run only after
+   the first run completes safely; note thermal/battery changes.
+5. Enable airplane mode and turn off Wi-Fi/mobile data before the inference
+   run. Generate a short response with the local executable and local file.
+   The adapter has no remote backend or cloud fallback; the test must still
+   succeed with networking disabled.
+6. Record raw output/timings and all settings in the benchmark report. Do not
+   mark the task accepted until real generation, integrity verification,
+   missing/incompatible-model errors, and low-memory behavior have been
+   checked on the target device.
+
+The last reported device snapshot (2026-11-01) showed 6,849,160 kB
+`MemAvailable` and 195 GB free on the filesystem backing Termux paths. These
+values are historical observations, not a runtime guarantee; refresh them
+before the model is downloaded or loaded.
+
 ## Termux verification
 
 From the repository root:
