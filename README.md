@@ -33,7 +33,7 @@ These are engineering directions, not claims that every engine is already implem
 
 ## Development status
 
-This repository currently contains the project foundation, read-only environment detection, and an initial local storage/SQLite layer. No story generation, model inference, TTS, image generation, or video production engine is claimed as implemented.
+This repository currently contains the project foundation, read-only environment detection, local storage/SQLite layer, and a backend-neutral local inference contract. No story generation, model inference, TTS, image generation, or video production engine is claimed as implemented.
 
 Read [docs/MASTER_PLAN.md](docs/MASTER_PLAN.md) for the authoritative product vision, architecture, phase order, acceptance gates, and mandatory task workflow. See [docs/STATUS.md](docs/STATUS.md) for the current verified milestone and next task, [docs/LLAMA_CPP_EVALUATION.md](docs/LLAMA_CPP_EVALUATION.md) for the local runtime build-path assessment, and [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for contribution and local test instructions.
 
@@ -59,7 +59,7 @@ Install the package in editable mode when needed:
 python -m pip install -e .
 ```
 
-On Android, install Python and Git from the Termux package repositories first. See [docs/ANDROID_COMPATIBILITY.md](docs/ANDROID_COMPATIBILITY.md) and [docs/STORAGE.md](docs/STORAGE.md). Actual Android-device validation remains a separate acceptance requirement.
+On Android, install Python and Git from the Termux package repositories first. See [docs/ANDROID_COMPATIBILITY.md](docs/ANDROID_COMPATIBILITY.md), [docs/STORAGE.md](docs/STORAGE.md), and [docs/LOCAL_INFERENCE.md](docs/LOCAL_INFERENCE.md). Actual Android-device validation remains a separate acceptance requirement.
 
 ## Repository layout
 
