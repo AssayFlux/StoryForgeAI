@@ -15,6 +15,7 @@ from storyforge.runtime import GenerationRequest, LlamaCppCliBackend, ModelSpec
 backend = LlamaCppCliBackend(
     executable="llama-cli",  # or an explicit executable path
     threads=2,               # optional CPU thread limit
+    context_size=2048,       # optional context cap for resource-bounded runs
     timeout_seconds=600,
 )
 backend.load_model(ModelSpec("story-model", Path("~/models/story.gguf")))
