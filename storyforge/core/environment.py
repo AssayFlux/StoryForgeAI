@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 import os
 from pathlib import Path
 import platform
 import re
 import sys
-from collections.abc import Mapping
 
 
 @dataclass(frozen=True)
@@ -41,7 +41,7 @@ def _read_total_memory(meminfo_path: Path) -> int | None:
     try:
         with meminfo_path.open("r", encoding="ascii") as meminfo:
             for line in meminfo:
-                match = re.match(r"^MemTotal:\\s+(\\d+)\\s+kB\\s*$", line)
+                match = re.match(r"^MemTotal:\s+(\d+)\s+kB\s*$", line)
                 if match:
                     return int(match.group(1)) * 1024
     except (OSError, UnicodeError, ValueError):
@@ -87,14 +87,21 @@ def detect_environment(
     detected_os = platform.system() if os_name is None else os_name
     detected_machine = platform.machine() if machine is None else machine
     detected_python = sys.version.split()[0] if python_version is None else python_version
-    api_level = (
-        _read_android_api_level()
-        if android_api_level is None
-        else int(android_api_level)
-    )
 
-    android_marker = Path("/system/bin/getprop").exists()
-    is_android = bool(is_termux or api_level is not None or android_marker)
+    if android_api_level is not None:
+        api_level = int(android_api_level)
+    elif os_name is None:
+        api_level = _read_android_api_level()
+    else:
+        # An explicitly supplied OS makes this a simulated/test environment;
+        # do not leak the host interpreter's Android API into that result.
+        api_level = None
+
+    is_android = bool(
+        is_termux
+        or api_level is not None
+        or detected_os.strip().lower() == "android"
+    )
 
     return EnvironmentInfo(
         is_android=is_android,
