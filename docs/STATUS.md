@@ -49,7 +49,7 @@ Status labels:
 - Observed total memory: 12,188,905,472 bytes; this is total physical memory, not the application's safe memory budget.
 - Direct device check: `getprop ro.build.version.release` = 15 and `getprop ro.build.version.sdk` = 35 (2026-11-01). This supersedes the earlier detector's API 24 report for OS identification; investigate the detector discrepancy separately.
 - GitHub Actions CI: not confirmed in this status update.
-- llama.cpp adapter: implementation and mocked-process tests added in Phase 3, Task 4. No actual GGUF model load or generation has been run; Termux verification is pending.
+- llama.cpp adapter: implementation and mocked-process tests added in Phase 3, Task 4. GitHub Actions run 12 passed all 34 repository tests on commit `c785f4f` (2026-11-01); this is CI evidence, not an Android device test. No actual GGUF model load or generation has been run; Termux verification is pending.
 - Production capabilities: no story, model inference, TTS, image generation or video production engine is claimed as implemented.
 
 ## Next task
