@@ -24,6 +24,7 @@ Status labels:
 | Local inference interface | Android Verified (user-confirmed) | Phase 3, Task 2; user confirmed the latest Termux verification was all good on 2026-11-01; backend-neutral model/request/result types, protocol and typed errors; concrete CLI adapter added later in Task 4 |
 | Native llama.cpp build | Android Verified (CLI smoke test) | Phase 3, Task 3; user built upstream llama.cpp natively in Termux on ARM64 with Clang 21.1.8/CMake 4.4.5; `llama-cli --version` and `--help` succeeded; no model loaded and no inference test yet |
 | llama.cpp CLI adapter | Android Verified; Task 4 accepted | User's Termux run: all 34 repository tests passed; installed CLI help confirmed every adapter flag; explicit executable discovery returned `Available: True`. This does not verify GGUF loading or inference. |
+| Local model registry | Implemented; Termux verification pending | Phase 3, Task 5: SQLite schema v2; explicit local GGUF registration; license/source/attribution metadata; streaming SHA-256; on-demand missing/modified/invalid checks. No download, copy, move, delete or model loading. |
 | Story generation | Planned | Phase 4 |
 | Character and continuity engine | Planned | Phase 5 |
 | Story analysis and scene planning | Planned | Phase 6 |
@@ -50,8 +51,9 @@ Status labels:
 - Direct device check: `getprop ro.build.version.release` = 15 and `getprop ro.build.version.sdk` = 35 (2026-11-01). This supersedes the earlier detector's API 24 report for OS identification; investigate the detector discrepancy separately.
 - GitHub Actions CI: not confirmed in this status update.
 - llama.cpp adapter: Phase 3, Task 4; user pasted Termux results on 2026-11-01 confirming all 34 repository tests passed, all adapter CLI flags are present in the installed `llama-cli --help`, and explicit executable discovery returned `Available: True`. This is device verification of tests, CLI option compatibility and executable discovery. No actual GGUF model load or text generation has been run.
+- Model registry: automated tests cover schema migration, registration, checksum/provenance persistence, invalid inputs, duplicate records, file tampering/missing files and SQLite integrity. Tests have not yet been run on the user's Termux device. Synthetic GGUF fixtures are used; no actual model weights are downloaded or loaded.
 - Production capabilities: no story, model inference, TTS, image generation or video production engine is claimed as implemented.
 
 ## Next task
 
-**Next: Phase 3, Task 5 — local model registry and explicit local import.** Add persistent metadata for locally managed GGUF models (identity, path, format, size, SHA-256, license/source/attribution and integrity state), with file validation and corruption/missing-file tests. Keep imports local-only for this task: no automatic downloads, network fallback, or model selection without explicit user consent.
+**Current acceptance gate: Phase 3, Task 5 — local model registry and explicit local import.** Run the Termux verification commands in [LOCAL_INFERENCE.md](LOCAL_INFERENCE.md). Once accepted, continue to the next incomplete task in the master plan: benchmark a small, explicitly selected local GGUF candidate and verify real offline inference, subject to license, free-storage and memory checks.

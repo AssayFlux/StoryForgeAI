@@ -45,24 +45,51 @@ backend.unload_model()
 - Automated tests mock the subprocess; actual model loading and inference still
   require a local GGUF file and device verification.
 
-## Termux verification (2026-11-01)
+## Local model registry
 
-The user ran `python -m unittest discover -s tests -v` in the StoryForgeAI checkout: **34 tests passed**. They also checked the locally built `$HOME/src/llama.cpp/build/bin/llama-cli --help`; the output confirmed all flags used by `LlamaCppCliBackend`: `--system-prompt`, `--single-turn`, `--no-display-prompt`, `--no-show-timings`, `--simple-io`, `--n-predict`, `--top-p`, and `--threads`. Finally, constructing `LlamaCppCliBackend` with that explicit executable path returned `Available: True`.
+The `storyforge.models.ModelRegistry` API records an already-present GGUF file.
+It never downloads, copies, moves, deletes, or loads model weights. The path
+remains where the user placed it; users must keep that file available.
 
-This is real-device verification of the repository suite, CLI option compatibility, and executable discovery. It is **not** a model-load or inference test: no GGUF file was selected, no generated tokens were observed, and offline inference remains unverified.
+Registration requires a model name and explicit license identifier/name.
+Source name/URI and attribution can also be recorded. The registry validates
+the GGUF magic and supported header version, records file size and a streaming
+SHA-256 checksum (1 MiB chunks), and stores the metadata in SQLite schema v2.
+The file itself is never stored in SQLite.
 
-## Contract
+```python
+from storyforge.models import ModelRegistry
+from storyforge.storage import Database
 
-- `ModelSpec` identifies a model already stored locally.
-- `GenerationRequest` carries a prompt and common sampling controls.
-- `GenerationResult` carries generated text, a finish reason, and optional usage/timing metadata.
-- `InferenceBackend` defines availability, model selection, generation, and unloading.
-- A concrete backend must never silently use a remote service.
+registry = ModelRegistry(Database("storyforge.db"))
+model = registry.register_local_model(
+    "/storage/emulated/0/Download/story-model.gguf",
+    name="Story model",
+    license_id="LICENSE-ID",
+    license_name="License name",
+    source_name="Model publisher",
+    source_uri="https://example.invalid/model-card",
+    attribution="Required attribution, if any",
+)
+print(model["id"], model["sha256"], model["integrity_status"])
+print(registry.check_integrity(model["id"])["integrity_status"])
+```
 
-## Lifecycle
+Integrity checks classify a file as `valid`, `missing`, `modified`, or
+`invalid`. Rechecking hashes the whole file, so it can take time for multi-GB
+weights; it uses bounded memory. Registration is local-only and performs no
+network request. A registered model is not automatically selected for
+inference; model selection remains a separate explicit action.
 
-1. Check `backend.is_available()`.
-2. Select a local model with `backend.load_model(model_spec)`.
-3. Submit validated `GenerationRequest` values.
-4. Persist the result through the application layer.
-5. Call `backend.unload_model()` when the stage finishes or memory must be released.
+## Termux verification
+
+From the repository root:
+
+```sh
+python -m unittest discover -s tests -v
+```
+
+The registry tests use small synthetic GGUF-header fixtures, not real model
+weights. Device verification must confirm migration, persistence, file
+integrity checks and no unexpected file movement. No real GGUF model has yet
+been loaded or used for inference.

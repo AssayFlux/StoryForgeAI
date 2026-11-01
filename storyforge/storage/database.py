@@ -12,7 +12,7 @@ from typing import Any
 from uuid import uuid4
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 
 def _utc_now() -> str:
@@ -50,8 +50,6 @@ class Database:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         connection = self._open()
         try:
-            # WAL improves reader/writer coexistence; SQLite may choose a
-            # different mode for filesystems that do not support WAL.
             connection.execute("PRAGMA journal_mode = WAL")
             connection.execute("PRAGMA synchronous = NORMAL")
         finally:
@@ -66,8 +64,6 @@ class Database:
                 )
                 """
             )
-            # Serialize migration checks so two app starts cannot both apply
-            # the same schema version. The migration itself stays transactional.
             connection.execute("BEGIN IMMEDIATE")
             row = connection.execute(
                 "SELECT MAX(version) AS version FROM schema_migrations"
@@ -83,6 +79,13 @@ class Database:
                 connection.execute(
                     "INSERT INTO schema_migrations(version, applied_at) VALUES (?, ?)",
                     (1, _utc_now()),
+                )
+                current_version = 1
+            if current_version < 2:
+                self._migration_2(connection)
+                connection.execute(
+                    "INSERT INTO schema_migrations(version, applied_at) VALUES (?, ?)",
+                    (2, _utc_now()),
                 )
 
     @staticmethod
@@ -123,6 +126,51 @@ class Database:
             "CREATE INDEX idx_generation_jobs_status_created "
             "ON generation_jobs(status, created_at)"
         )
+
+    @staticmethod
+    def _migration_2(connection: sqlite3.Connection) -> None:
+        """Add local model registry metadata; model weights remain ordinary files."""
+        connection.execute(
+            """
+            CREATE TABLE models (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL CHECK(length(trim(name)) > 0),
+                format TEXT NOT NULL CHECK(format = 'gguf'),
+                integrity_status TEXT NOT NULL DEFAULT 'valid'
+                    CHECK(integrity_status IN ('valid', 'missing', 'modified', 'invalid')),
+                integrity_checked_at TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+            """
+        )
+        connection.execute(
+            """
+            CREATE TABLE model_files (
+                id TEXT PRIMARY KEY,
+                model_id TEXT NOT NULL UNIQUE,
+                path TEXT NOT NULL UNIQUE,
+                size_bytes INTEGER NOT NULL CHECK(size_bytes > 0),
+                sha256 TEXT NOT NULL CHECK(length(sha256) = 64),
+                registered_at TEXT NOT NULL,
+                FOREIGN KEY(model_id) REFERENCES models(id) ON DELETE CASCADE
+            )
+            """
+        )
+        connection.execute(
+            """
+            CREATE TABLE model_licenses (
+                model_id TEXT PRIMARY KEY,
+                license_id TEXT NOT NULL CHECK(length(trim(license_id)) > 0),
+                license_name TEXT NOT NULL CHECK(length(trim(license_name)) > 0),
+                source_uri TEXT,
+                source_name TEXT,
+                attribution TEXT,
+                FOREIGN KEY(model_id) REFERENCES models(id) ON DELETE CASCADE
+            )
+            """
+        )
+        connection.execute("CREATE INDEX idx_models_name ON models(name)")
 
     def integrity_check(self) -> list[str]:
         """Return SQLite integrity messages; ['ok'] indicates a healthy DB."""
