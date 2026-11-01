@@ -161,15 +161,16 @@ Work strictly in order. Each numbered phase is a milestone, not permission to sk
 - Acceptance: foundation tests pass; repository clean and synchronized.
 
 ### Phase 2 — Termux setup and environment detection
-**Task 1 status: Tested and accepted.**
-- Read-only detection of Android/Termux, architecture, Python, API level, memory and Termux prefix.
-- Task 2 implementation is committed; Termux verification is pending.
-- The device reports API level 24; reconcile this with the actual Android version before recording Android 15 compatibility.
-- Acceptance: tests pass on device; missing platform information is non-fatal; no unexpected shell/network side effects; storage/database tests pass on device.
+**Tasks 1–2 status: Accepted.**
+- Task 1: read-only detection of Android/Termux, architecture, Python, API level, memory and Termux prefix — tested and accepted on device.
+- Task 2: configurable local data paths and SQLite project/job persistence — user confirmed Termux verification passed on 2026-11-01.
+- The device previously reported API level 24; reconcile this with the actual Android version before claiming Android 15 compatibility.
+- Acceptance: tests pass on device; missing platform information is non-fatal; no unexpected shell/network side effects; storage/database persistence and integrity checks pass.
 
 ### Phase 3 — Local AI runtime (llama.cpp / GGUF)
-**Task 1: Build-path evaluation — completed as a documentation/research task.** The current upstream guidance supports native Termux builds; see [LLAMA_CPP_EVALUATION.md](LLAMA_CPP_EVALUATION.md). No build or model was installed as part of this evaluation.
-**Next task: add a backend-neutral runtime adapter interface before binding the application to a particular binary.**
+**Task 1: Build-path evaluation — completed.** Upstream Termux-native and Android NDK paths are compared in [LLAMA_CPP_EVALUATION.md](LLAMA_CPP_EVALUATION.md). No build or model was installed.
+**Task 2: Backend-neutral inference interface — implemented; Termux verification pending.** See [LOCAL_INFERENCE.md](LOCAL_INFERENCE.md). The contract is independent of llama.cpp process flags and native-library details.
+**Next task: run the complete test suite and interface smoke test on the user's Termux device.**
 - Build or install only through documented, reproducible steps; no unverified install claims.
 - Add local model registry, explicit import/download, license metadata, checksum and integrity validation.
 - Benchmark small candidate models on device; record peak memory, tokens/sec, startup time, heat and battery observations.
@@ -288,9 +289,9 @@ A fully generative text-to-video model is not a prerequisite for the first compl
 
 ## 9. Current next action
 
-The repository has accepted Phase 1 and Phase 2 Task 1. The immediate next task is:
+Phase 1 and Phase 2 Tasks 1–2 are accepted. Phase 3 Task 1 (build-path evaluation) is documented. Phase 3 Task 2 (backend-neutral inference contract) is implemented and has passed six focused tests in an isolated local test harness.
 
-**Phase 2, Task 2 — Verify the committed local project-data foundation on the user's Termux device.** Pull the latest commit, run the full test suite, and exercise database creation, project/job persistence, reopening, and integrity checking. Do not start llama.cpp integration until this persistence foundation is accepted. Also resolve the Android API-level discrepancy before recording the target device as Android 15 verified.
+**Immediate next task: Phase 3, Task 2 — verify the inference contract on the user's Termux device.** Pull the latest commit, run the complete unittest suite, and confirm the runtime-interface tests pass. Do not build llama.cpp or download a model until this interface is accepted on device. The Android API-level discrepancy remains open and must be resolved before claiming Android 15 compatibility.
 
 ---
 
