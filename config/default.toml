@@ -14,7 +14,9 @@ max_loaded_models = 1
 process_long_media_in_segments = true
 
 [storage]
-# These directories are local runtime data and are excluded from Git.
+# Runtime data is outside the source checkout by default. STORYFORGE_HOME can
+# override the location. Model and project files are excluded from Git.
+data_dir = "~/.local/share/storyforge-ai"
 projects_dir = "projects"
 models_dir = "models"
 assets_dir = "assets"

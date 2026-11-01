@@ -187,3 +187,8 @@ __marimo__/
 *.mkv
 *.wav
 *.mp3
+
+# StoryForge local SQLite databases and journals
+*.db
+*.db-wal
+*.db-shm

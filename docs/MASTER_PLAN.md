@@ -163,7 +163,8 @@ Work strictly in order. Each numbered phase is a milestone, not permission to sk
 ### Phase 2 — Termux setup and environment detection
 **Task 1 status: Tested and accepted.**
 - Read-only detection of Android/Termux, architecture, Python, API level, memory and Termux prefix.
-- Next: reconcile the reported API level with the actual Android version; then design and implement the local data-directory and SQLite foundation as the next separately scoped task.
+- Task 2 implementation is committed; Termux verification is pending.
+- The device reports API level 24; reconcile this with the actual Android version before recording Android 15 compatibility.
 - Acceptance: tests pass on device; missing platform information is non-fatal; no unexpected shell/network side effects; storage/database tests pass on device.
 
 ### Phase 3 — Local AI runtime (llama.cpp / GGUF)
@@ -289,9 +290,7 @@ A fully generative text-to-video model is not a prerequisite for the first compl
 
 The repository has accepted Phase 1 and Phase 2 Task 1. The immediate next task is:
 
-**Phase 2, Task 2 — Design and implement the local project-data foundation: configurable app data paths, SQLite connection/schema/migration baseline, and focused tests.**
-
-Before implementation, inspect existing configuration and package conventions. Do not start llama.cpp integration until this persistence foundation is accepted. Also resolve the Android API-level discrepancy before recording the target device as Android 15 verified.
+**Phase 2, Task 2 — Verify the committed local project-data foundation on the user's Termux device.** Pull the latest commit, run the full test suite, and exercise database creation, project/job persistence, reopening, and integrity checking. Do not start llama.cpp integration until this persistence foundation is accepted. Also resolve the Android API-level discrepancy before recording the target device as Android 15 verified.
 
 ---
 

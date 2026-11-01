@@ -33,13 +33,13 @@ These are engineering directions, not claims that every engine is already implem
 
 ## Development status
 
-This repository currently contains the project foundation only. No story generation, model inference, TTS, image generation, or video production engine is claimed as implemented.
+This repository currently contains the project foundation, read-only environment detection, and an initial local storage/SQLite layer. No story generation, model inference, TTS, image generation, or video production engine is claimed as implemented.
 
 Read [docs/MASTER_PLAN.md](docs/MASTER_PLAN.md) for the authoritative product vision, architecture, phase order, acceptance gates, and mandatory task workflow. See [docs/STATUS.md](docs/STATUS.md) for the current verified milestone and next task, and [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for contribution and local test instructions.
 
 ## Getting started
 
-The initial commit establishes package metadata and tests. It does not yet provide a production CLI.
+The current development baseline provides package metadata, tests, and reusable storage primitives. It does not yet provide a production CLI or media-generation pipeline.
 
 Requirements:
 - Python 3.11 or newer.
@@ -59,7 +59,7 @@ Install the package in editable mode when needed:
 python -m pip install -e .
 ```
 
-On Android, install Python and Git from the Termux package repositories first. See [docs/ANDROID_COMPATIBILITY.md](docs/ANDROID_COMPATIBILITY.md). Actual Android-device validation remains a separate acceptance requirement.
+On Android, install Python and Git from the Termux package repositories first. See [docs/ANDROID_COMPATIBILITY.md](docs/ANDROID_COMPATIBILITY.md) and [docs/STORAGE.md](docs/STORAGE.md). Actual Android-device validation remains a separate acceptance requirement.
 
 ## Repository layout
 
@@ -68,6 +68,7 @@ config/                 Default application configuration
 docs/                   Architecture, development, compatibility, and status
 storyforge/             Python application package
   core/                 Shared foundations and interfaces
+  storage/              Local data paths and SQLite persistence
 tests/                  Automated tests
 scripts/                Developer and maintenance scripts
 assets/                 Small, redistributable project assets
