@@ -33,7 +33,7 @@ These are engineering directions, not claims that every engine is already implem
 
 ## Development status
 
-This repository currently contains the project foundation, read-only environment detection, local storage/SQLite layer, and a backend-neutral local inference contract. No story generation, model inference, TTS, image generation, or video production engine is claimed as implemented.
+The repository currently contains the project foundation, read-only environment detection, local storage/SQLite layer, a backend-neutral inference contract, and a first local llama.cpp CLI adapter. The adapter and its mocked-process tests are implemented; Android-side adapter verification and actual GGUF model inference are still pending. Story generation, TTS, image generation, animation, and video production are not yet implemented.
 
 Read [docs/MASTER_PLAN.md](docs/MASTER_PLAN.md) for the authoritative product vision, architecture, phase order, acceptance gates, and mandatory task workflow. See [docs/STATUS.md](docs/STATUS.md) for the current verified milestone and next task, [docs/LLAMA_CPP_EVALUATION.md](docs/LLAMA_CPP_EVALUATION.md) for the local runtime build-path assessment, and [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for contribution and local test instructions.
 
@@ -69,6 +69,7 @@ docs/                   Architecture, development, compatibility, and status
 storyforge/             Python application package
   core/                 Shared foundations and interfaces
   storage/              Local data paths and SQLite persistence
+  runtime/              Backend-neutral inference and local llama.cpp adapter
 tests/                  Automated tests
 scripts/                Developer and maintenance scripts
 assets/                 Small, redistributable project assets

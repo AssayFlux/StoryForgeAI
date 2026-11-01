@@ -21,7 +21,7 @@ Status labels:
 | Android OS/API verification | Android Verified | User directly confirmed `getprop` reports Android 15 / API 35 on 2026-11-01; earlier environment-detector API 24 result conflicts and must be investigated before relying on detector output |
 | Local data paths and SQLite foundation | Tested; accepted | Phase 2, Task 2; user confirmed Termux verification passed on 2026-11-01; storage paths, SQLite schema v1, project/job persistence and integrity check |
 | llama.cpp build-path evaluation | Completed (research/docs) | Phase 3, Task 1; upstream Termux and Android NDK paths compared in [LLAMA_CPP_EVALUATION.md](LLAMA_CPP_EVALUATION.md); no build performed |
-| Local inference interface | Android Verified (user-confirmed) | Phase 3, Task 2; user confirmed the latest Termux verification was all good on 2026-11-01; backend-neutral model/request/result types, protocol and typed errors; no inference backend exists yet |
+| Local inference interface | Android Verified (user-confirmed) | Phase 3, Task 2; user confirmed the latest Termux verification was all good on 2026-11-01; backend-neutral model/request/result types, protocol and typed errors; concrete CLI adapter added later in Task 4 |
 | Native llama.cpp build | Android Verified (CLI smoke test) | Phase 3, Task 3; user built upstream llama.cpp natively in Termux on ARM64 with Clang 21.1.8/CMake 4.4.5; `llama-cli --version` and `--help` succeeded; no model loaded and no inference test yet |
 | llama.cpp CLI adapter | Implemented; automated tests added | Phase 3, Task 4; `LlamaCppCliBackend` implements the existing protocol with local GGUF validation, safe subprocess arguments, timeout/error mapping and output handling; Termux verification pending |
 | Story generation | Planned | Phase 4 |
