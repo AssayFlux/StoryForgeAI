@@ -4,7 +4,7 @@
 **Repository:** https://github.com/AssayFlux/StoryForgeAI  
 **Primary product goal:** A fully offline-capable, Android-first mobile application for producing high-quality AI-assisted stories and finished YouTube-style videos, including coherent characters, scene design, narration, visual animation, sound, subtitles, editing, and export.
 
-This document is the project's source of truth for scope, phase order, acceptance gates, and task execution. Every development session must read this plan and `docs/STATUS.md` before proposing or making repository changes.
+This document is the project's source of truth for scope, engineering priorities, phase order, acceptance gates, and the next task. Every development session must read this plan and `docs/STATUS.md` before proposing or making repository changes. Update both when an accepted milestone changes.
 
 ---
 
@@ -57,7 +57,7 @@ The final product is an Android mobile application. Termux is the initial develo
 
 ### Layer A — Android application and user experience
 
-The end product is a mobile app with project dashboard, editor, scene/shot timeline, model manager, job queue, preview, and export screens. Early development can use a Termux CLI for validation, but core logic must remain UI-independent. Choose the final Android UI/packaging technology only after a small compatibility spike and explicit evaluation; do not prematurely bind the project to a framework.
+The end product is a mobile app with project dashboard, editor, scene/shot timeline, model manager, job queue, preview, settings, and export screens. Early development can use a Termux CLI for validation, but core logic must remain UI-independent. Choose the final Android UI/packaging technology only after a small compatibility spike and explicit evaluation; do not prematurely bind the project to a framework.
 
 ### Layer B — orchestration and resource manager
 
@@ -169,10 +169,11 @@ Work strictly in order. Each numbered phase is a milestone, not permission to sk
 
 ### Phase 3 — Local AI runtime (llama.cpp / GGUF)
 **Task 1: Build-path evaluation — completed.** Upstream Termux-native and Android NDK paths are compared in [LLAMA_CPP_EVALUATION.md](LLAMA_CPP_EVALUATION.md). No build or model was installed.
-**Task 2: Backend-neutral inference interface — accepted after user-confirmed Termux verification (2026-11-01).** See [LOCAL_INFERENCE.md](LOCAL_INFERENCE.md). The contract is independent of llama.cpp process flags and native-library details.
-**Task 3: Native llama.cpp build feasibility — device verified.** User built upstream llama.cpp natively in Termux on ARM64; `llama-cli --version` and `--help` succeeded. This verifies compilation and CLI startup only, not model loading or inference.
-**Task 4: llama.cpp CLI adapter — Termux verified and accepted (2026-11-01).** `LlamaCppCliBackend` implements the backend-neutral protocol, validates a local GGUF path, invokes the CLI without a shell, and maps runtime errors. The user ran all 34 tests; CLI help confirmed the adapter flags and explicit executable discovery returned `Available: True`. No GGUF model has yet been loaded or used to generate tokens.
+**Task 2: Backend-neutral inference interface — accepted after user-confirmed Termux verification (2026-11-01).** See [LOCAL_INFERENCE.md](LOCAL_INFERENCE.md). The contract is independent of llama.cpp process flags and native-library details. A concrete CLI backend was added later in Task 4; no model registry or actual GGUF inference has been verified yet.
+**Tasks 1–3 completed:** build-path evaluation, backend-neutral inference interface, and native llama.cpp build feasibility. On 2026-11-01 the user built upstream llama.cpp natively in Termux on ARM64 using Clang 21.1.8 and CMake 4.4.5; `llama-cli --version` and `llama-cli --help` both ran successfully. The tested upstream checkout reports llama.cpp `0.8.0-dev`, build 1, ggml commit `a91eab6`. This verifies native compilation and CLI startup only; no GGUF model was loaded and no text inference has been tested.
+**Task 4: llama.cpp CLI adapter — Termux verified and accepted (2026-11-01).** `LlamaCppCliBackend` lives in `storyforge/runtime/llama_cpp.py` and implements the existing backend-neutral protocol. It resolves an explicit/PATH executable, validates an existing non-empty GGUF file, invokes `llama-cli` with an argument list (no shell), supports bounded generation, sampling controls, optional thread limits and stop-text trimming, and maps runtime/process failures to typed errors. On the user's Termux device, all 34 repository tests passed; the installed llama.cpp help output confirmed every adapter flag (`--system-prompt`, `--single-turn`, `--no-display-prompt`, `--no-show-timings`, `--simple-io`, `--n-predict`, `--top-p`, and `--threads`), and explicit executable discovery returned `Available: True`. This accepts adapter integration and CLI compatibility only; no GGUF model has yet been loaded and no tokens generated. See [LOCAL_INFERENCE.md](LOCAL_INFERENCE.md).
 **Task 5: Local model registry — implemented; Termux acceptance pending.** SQLite schema v2 adds `models`, `model_files`, and `model_licenses`. `ModelRegistry.register_local_model` registers an existing local GGUF file without copying or moving it, requires explicit license metadata, validates the GGUF header, and records byte size plus streaming SHA-256. On-demand integrity checks distinguish `valid`, `missing`, `modified`, and `invalid`. No download, network request, model selection, or model load occurs. See [LOCAL_INFERENCE.md](LOCAL_INFERENCE.md). **Acceptance:** run the full test suite on Termux; verify SQLite migration/persistence and integrity checks against a local synthetic fixture; confirm the source file is unchanged. Actual model inference remains a separate subsequent acceptance gate.
+- Benchmark small candidate models on device; record peak memory, tokens/sec, startup time, heat and battery observations.
 - Full Phase 3 acceptance still requires actual inference with a locally present model while network access is disabled, clean error handling for missing/incompatible models, and no cloud fallback.
 
 ### Phase 4 — Story engine
@@ -187,16 +188,20 @@ Work strictly in order. Each numbered phase is a milestone, not permission to sk
 ### Phase 6 — Story analysis and scene planning
 - Story structure, pacing, tone, scene breakdown, shot list, storyboard and visual prompts.
 - Analysis and generation remain separate.
+- Acceptance: structured outputs validate against schemas and survive save/reload.
 
 ### Phase 7 — Offline TTS
 - Evaluate available offline engines, voices, licenses, ARM64 compatibility and memory.
 - Segment-based speech generation, pronunciation controls and voice consistency.
+- Acceptance: speech generated without network; segments persist and can be regenerated independently.
 
 ### Phase 8 — Audio production
 - Music/effects import, ambience, mixing, normalization and synchronization.
+- Acceptance: reproducible audio render and technical checks.
 
 ### Phase 9 — Visual asset system
 - Asset library, references, prompt metadata, local generation/import adapters and character consistency workflow.
+- Acceptance: offline asset organization and complete provenance; any image model must pass device benchmarks before being enabled by default.
 
 ### Phase 10 — Image-based cinematic video and animation
 - Storyboard-to-timeline, multiple shots, keyframes, camera moves, transitions, layers, 2.5D/parallax options, overlays and preview.
@@ -204,25 +209,31 @@ Work strictly in order. Each numbered phase is a milestone, not permission to sk
 
 ### Phase 11 — Subtitles
 - Subtitle generation/import, timing, styling, line breaking and synchronization.
+- Acceptance: subtitle file and rendered output pass timing/format checks.
 
 ### Phase 12 — FFmpeg production and rendering
 - Verify Termux FFmpeg build, codecs, filters and licensing; create render presets, proxies, segment rendering, resume and export validation.
+- Acceptance: complete offline video export with verified streams, duration, dimensions, audio and subtitles.
 
 ### Phase 13 — YouTube package
 - Titles, descriptions, chapters, tags, thumbnail composition and export bundle. No automatic publishing or upload by default.
+- Acceptance: all metadata and thumbnail assets saved locally and editable.
 
 ### Phase 14 — Android mobile application
 - Mobile project dashboard, editors, timeline, model manager, job queue, preview and settings.
 - Select and validate app framework/packaging path; bridge to core engines without duplicating business logic.
+- Acceptance: installable app on target Android version, local project workflows, permissions, lifecycle/recovery and offline operation verified.
 
 ### Phase 15 — Optimization, reliability and production release
 - Profile memory, CPU, heat, battery, storage and render time.
 - Improve resource scheduling, caching, cleanup, backups, crash recovery, accessibility and UX.
 - Full test suite, device matrix where possible, documentation, versioning and reproducible release artifacts.
+- Acceptance: release checklist passes on real target device; limitations documented; no unsupported compatibility or quality claims.
 
 ### Phase 16 — Optional lightweight AI experiments
 - Evaluate small local image/video models, interpolation, motion tools or acceleration.
 - Experiments must not destabilize the reliable production pipeline.
+- Acceptance: each feature is separately benchmarked, licensed, opt-in and removable.
 
 ---
 
@@ -238,5 +249,54 @@ At the start of every development task:
 6. Run available automated checks. Clearly separate local/CI results from tests the user must run on Android.
 7. Inspect the final diff and update `docs/STATUS.md` with evidence, limitations, and the next task.
 8. Commit with a specific conventional commit message. Never claim a commit or push succeeded until confirmed.
-9. Give exact Termux commands and expected output.
-10. Stop and wait for the user's device results/acceptance before starting the next task.
+9. Give exact Termux commands and the expected evidence for device verification.
+10. Stop and wait for the user's results/acceptance before starting another task.
+
+If a test fails, fix the current task only. Preserve accepted work. Never skip a phase because a later feature looks more exciting.
+
+### Required response format for each task
+
+- Current plan phase and exact task
+- Repository state inspected
+- What will change (and what will not)
+- Acceptance criteria
+- Implementation and tests
+- Commit SHA/link, only after confirmed
+- Exact user verification commands
+- Current status and one next task
+
+---
+
+## 8. Definition of done for the overall product
+
+StoryForge AI is not "production-ready" until all required product workflows operate as a coherent mobile application and the following are demonstrated on the target Android device:
+
+- Install, launch, create, save, reopen, backup and restore projects.
+- Run story generation and analysis with local models while network access is disabled.
+- Maintain character, location and plot continuity across a multi-scene project.
+- Generate offline narration and assemble audio.
+- Produce a multi-scene video with real timeline structure, motion/keyframes/transitions and synchronized audio/subtitles.
+- Render and validate a finished video using local tools.
+- Pause/recover interrupted jobs without losing completed work.
+- Operate within documented device resource limits and fail safely when resources are insufficient.
+- Manage model files, licenses, storage and user data transparently.
+- Pass automated tests and real-device acceptance checks.
+- Provide clear setup, user, troubleshooting, privacy, licensing and release documentation.
+
+A fully generative text-to-video model is not a prerequisite for the first complete production release. A reliable offline animation, compositing and editing system is required. Advanced generative video is an optional capability until a suitable model is proven on-device.
+
+---
+
+## 9. Current next action
+
+Phase 1 and Phase 2 Tasks 1–2 are accepted. Phase 3 Task 1 (build-path evaluation) is documented. Phase 3 Task 2 (backend-neutral inference contract) is implemented and the user confirmed its Termux verification was all good on 2026-11-01. Direct `getprop` checks confirm Android 15/API 35; this supersedes the earlier API 24 detector reading, which remains a detector discrepancy to investigate. The confirmation did not include raw command output, so no additional test count or device details are asserted.
+
+Phase 3, Tasks 1–3 are complete at the documented scope: the build-path evaluation, backend-neutral inference contract, and native Termux build/CLI smoke test. On 2026-11-01 the user confirmed that upstream llama.cpp built on the Android 15/API 35 ARM64 device with Clang 21.1.8 and CMake 4.4.5; `llama-cli --version` and `--help` both executed. No model was downloaded or loaded, so inference is not yet verified. The environment detector's earlier API 24 discrepancy remains open.
+Phase 3, Task 4 is accepted after user-side Termux verification on 2026-11-01: all 34 repository tests passed; the installed `llama-cli --help` output contained every CLI option used by the adapter; and explicit executable discovery returned `Available: True`. This verifies the adapter's command compatibility and executable discovery on the device, not actual GGUF loading or text generation.
+**Immediate next task: Phase 3, Task 5 — local model registry and explicit local import.** Define and persist model metadata (identity, local path, format, size, SHA-256, license, source, attribution and integrity state), validate imported files, and test corruption/missing-file handling. Do not automatically download models or introduce network fallback; any download capability requires a separate explicit user action and license/storage checks.
+
+---
+
+## 10. Change control
+
+This plan is the default authority for implementation order and product scope. Changes are allowed when device tests, licensing, Android constraints, or better engineering evidence require them. Record any approved change in this document with its reason and update the status/next task. Do not silently change the product goal or skip required capabilities.

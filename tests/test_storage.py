@@ -66,8 +66,8 @@ class DatabaseTests(unittest.TestCase):
             version = connection.execute(
                 "SELECT MAX(version) FROM schema_migrations"
             ).fetchone()[0]
-        self.assertTrue({"schema_migrations", "projects", "generation_jobs"} <= tables)
-        self.assertEqual(version, 1)
+        self.assertTrue({"schema_migrations", "projects", "generation_jobs", "models", "model_files", "model_licenses"} <= tables)
+        self.assertEqual(version, 2)
 
     def test_project_and_job_round_trip(self) -> None:
         self.database.initialize()
