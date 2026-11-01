@@ -170,11 +170,11 @@ Work strictly in order. Each numbered phase is a milestone, not permission to sk
 ### Phase 3 — Local AI runtime (llama.cpp / GGUF)
 **Task 1: Build-path evaluation — completed.** Upstream Termux-native and Android NDK paths are compared in [LLAMA_CPP_EVALUATION.md](LLAMA_CPP_EVALUATION.md). No build or model was installed.
 **Task 2: Backend-neutral inference interface — accepted after user-confirmed Termux verification (2026-11-01).** See [LOCAL_INFERENCE.md](LOCAL_INFERENCE.md). The contract is independent of llama.cpp process flags and native-library details. No inference backend or model is implemented yet.
-**Next task: native llama.cpp build feasibility and smoke test in Termux on ARM64.** The device preflight reports Android 15/API 35, ARM64, about 6.7 GiB currently available memory, Git/Clang/Make and `libandroid-spawn`; CMake is missing. First verify actual Termux-private storage capacity, then install CMake and proceed with a conservative build. Do not download a model until the executable builds and its basic smoke test passes.
-- Build or install only through documented, reproducible steps; no unverified install claims.
-- Add local model registry, explicit import/download, license metadata, checksum and integrity validation.
+**Tasks 1–3 completed:** build-path evaluation, backend-neutral inference interface, and native llama.cpp build feasibility. On 2026-11-01 the user built upstream llama.cpp natively in Termux on ARM64 using Clang 21.1.8 and CMake 4.4.5; `llama-cli --version` and `llama-cli --help` both ran successfully. The tested upstream checkout reports llama.cpp `0.8.0-dev`, build 1, ggml commit `a91eab6`. This verifies native compilation and CLI startup only; no GGUF model was loaded and no text inference has been tested.
+**Next task: implement the llama.cpp CLI adapter inside this StoryForgeAI repository** under `storyforge/runtime/`, behind the accepted backend-neutral interface. Keep executable discovery/configuration explicit, use argument arrays (never shell interpolation), validate local GGUF paths, capture subprocess failures as typed runtime errors, and test lifecycle/error behavior with mocked subprocesses. Do not add a runtime dependency or download models.
+- After the adapter is tested, add the local model registry, explicit import/download, license metadata, checksum and integrity validation.
 - Benchmark small candidate models on device; record peak memory, tokens/sec, startup time, heat and battery observations.
-- Acceptance: inference works with network disabled using a locally present model; clean error handling for missing/incompatible models; no cloud fallback.
+- Full Phase 3 acceptance still requires actual inference with a locally present model while network access is disabled, clean missing/incompatible-model errors, and no cloud fallback.
 
 ### Phase 4 — Story engine
 - Structured brief, outline, script, dialogue, revision and version history.
@@ -291,7 +291,8 @@ A fully generative text-to-video model is not a prerequisite for the first compl
 
 Phase 1 and Phase 2 Tasks 1–2 are accepted. Phase 3 Task 1 (build-path evaluation) is documented. Phase 3 Task 2 (backend-neutral inference contract) is implemented and the user confirmed its Termux verification was all good on 2026-11-01. Direct `getprop` checks confirm Android 15/API 35; this supersedes the earlier API 24 detector reading, which remains a detector discrepancy to investigate. The confirmation did not include raw command output, so no additional test count or device details are asserted.
 
-**Immediate next task: Phase 3, Task 3 — native llama.cpp build feasibility and smoke test on Termux/ARM64.** Verify Termux-private storage capacity, install missing CMake, then perform a cautious native build. Do not download a model until the executable builds and its basic smoke test passes. The Android API-level discrepancy remains open and must be resolved before claiming Android 15 compatibility.
+Phase 3, Tasks 1–3 are complete at the documented scope: the build-path evaluation, backend-neutral inference contract, and native Termux build/CLI smoke test. On 2026-11-01 the user confirmed that upstream llama.cpp built on the Android 15/API 35 ARM64 device with Clang 21.1.8 and CMake 4.4.5; `llama-cli --version` and `--help` both executed. No model was downloaded or loaded, so inference is not yet verified. The environment detector's earlier API 24 discrepancy remains open.
+**Immediate next task: Phase 3, Task 4 — implement the llama.cpp CLI adapter inside StoryForgeAI's `storyforge/runtime/` package**, using the existing backend-neutral protocol and mocked subprocess tests. Keep the upstream source/build outside the StoryForgeAI repository; only StoryForge integration code, tests and documentation belong in this repository.
 
 ---
 
