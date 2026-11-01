@@ -35,7 +35,7 @@ These are engineering directions, not claims that every engine is already implem
 
 This repository currently contains the project foundation only. No story generation, model inference, TTS, image generation, or video production engine is claimed as implemented.
 
-See [docs/STATUS.md](docs/STATUS.md) for the phase status and [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for contribution and local test instructions.
+Read [docs/MASTER_PLAN.md](docs/MASTER_PLAN.md) for the authoritative product vision, architecture, phase order, acceptance gates, and mandatory task workflow. See [docs/STATUS.md](docs/STATUS.md) for the current verified milestone and next task, and [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for contribution and local test instructions.
 
 ## Getting started
 
