@@ -37,7 +37,7 @@ The final product is an Android mobile application. Termux is the initial develo
 
 - Android ARM64 device; intended target class is Android 15 and approximately 8 GB RAM.
 - Termux, no root, Python-based core during early development.
-- Actual device output currently reports ARM64, Termux, Python 3.14.8, and about 12.19 GB total memory. The reported Android API level is 24 and must be reconciled against the phone's Android version before claiming Android 15 verification.
+- Actual device output currently reports ARM64, Termux, Python 3.14.8, and about 12.19 GB total memory. Direct device checks on 2026-11-01 report Android 15 / API 35 (`getprop`); this supersedes the earlier environment-detector API 24 result for OS identification. Investigate the detector discrepancy before trusting its API-level field.
 - Total physical RAM is not the same as memory available to StoryForge. Runtime budgets must use current available memory and leave room for Android and other processes.
 
 ### Runtime policy
@@ -164,13 +164,13 @@ Work strictly in order. Each numbered phase is a milestone, not permission to sk
 **Tasks 1–2 status: Accepted.**
 - Task 1: read-only detection of Android/Termux, architecture, Python, API level, memory and Termux prefix — tested and accepted on device.
 - Task 2: configurable local data paths and SQLite project/job persistence — user confirmed Termux verification passed on 2026-11-01.
-- The device previously reported API level 24; reconcile this with the actual Android version before claiming Android 15 compatibility.
+- Direct device verification now confirms Android 15 / API 35 via `getprop` (2026-11-01). The earlier detector result of API 24 conflicts and should be debugged separately; do not use that detector field as proof of OS version until fixed.
 - Acceptance: tests pass on device; missing platform information is non-fatal; no unexpected shell/network side effects; storage/database persistence and integrity checks pass.
 
 ### Phase 3 — Local AI runtime (llama.cpp / GGUF)
 **Task 1: Build-path evaluation — completed.** Upstream Termux-native and Android NDK paths are compared in [LLAMA_CPP_EVALUATION.md](LLAMA_CPP_EVALUATION.md). No build or model was installed.
 **Task 2: Backend-neutral inference interface — accepted after user-confirmed Termux verification (2026-11-01).** See [LOCAL_INFERENCE.md](LOCAL_INFERENCE.md). The contract is independent of llama.cpp process flags and native-library details. No inference backend or model is implemented yet.
-**Next task: native llama.cpp build feasibility and smoke test in Termux on ARM64.** Re-check current upstream instructions and package availability before giving device commands. Do not download a model until the executable builds and its basic smoke test passes.
+**Next task: native llama.cpp build feasibility and smoke test in Termux on ARM64.** The device preflight reports Android 15/API 35, ARM64, about 6.7 GiB currently available memory, Git/Clang/Make and `libandroid-spawn`; CMake is missing. First verify actual Termux-private storage capacity, then install CMake and proceed with a conservative build. Do not download a model until the executable builds and its basic smoke test passes.
 - Build or install only through documented, reproducible steps; no unverified install claims.
 - Add local model registry, explicit import/download, license metadata, checksum and integrity validation.
 - Benchmark small candidate models on device; record peak memory, tokens/sec, startup time, heat and battery observations.
@@ -289,9 +289,9 @@ A fully generative text-to-video model is not a prerequisite for the first compl
 
 ## 9. Current next action
 
-Phase 1 and Phase 2 Tasks 1–2 are accepted. Phase 3 Task 1 (build-path evaluation) is documented. Phase 3 Task 2 (backend-neutral inference contract) is implemented and the user confirmed its Termux verification was all good on 2026-11-01. The confirmation did not include raw command output, so no additional test count or device details are asserted.
+Phase 1 and Phase 2 Tasks 1–2 are accepted. Phase 3 Task 1 (build-path evaluation) is documented. Phase 3 Task 2 (backend-neutral inference contract) is implemented and the user confirmed its Termux verification was all good on 2026-11-01. Direct `getprop` checks confirm Android 15/API 35; this supersedes the earlier API 24 detector reading, which remains a detector discrepancy to investigate. The confirmation did not include raw command output, so no additional test count or device details are asserted.
 
-**Immediate next task: Phase 3, Task 3 — native llama.cpp build feasibility and smoke test on Termux/ARM64.** Re-check current upstream instructions and package availability, then perform a cautious native build. Do not download a model until the executable builds and its basic smoke test passes. The Android API-level discrepancy remains open and must be resolved before claiming Android 15 compatibility.
+**Immediate next task: Phase 3, Task 3 — native llama.cpp build feasibility and smoke test on Termux/ARM64.** Verify Termux-private storage capacity, install missing CMake, then perform a cautious native build. Do not download a model until the executable builds and its basic smoke test passes. The Android API-level discrepancy remains open and must be resolved before claiming Android 15 compatibility.
 
 ---
 
