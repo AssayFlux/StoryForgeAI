@@ -13,8 +13,8 @@ Status labels:
 
 | Area | Status | Evidence / notes |
 |---|---|---|
-| Repository foundation | In Development | Initial structure, metadata, docs, and baseline tests in this task |
-| Termux environment detection | Planned | Phase 2 |
+| Repository foundation | Tested | Four foundation tests passed in Termux on the target device |
+| Termux environment detection | In Development | Read-only detector and regression tests added; device validation pending |
 | Local GGUF inference | Planned | Phase 3; llama.cpp |
 | Story generation | Planned | Phase 4 |
 | Character and continuity engine | Planned | Phase 5 |
@@ -32,6 +32,7 @@ Status labels:
 
 ## Verification summary
 
-- Desktop/CI tests: not yet run for this foundation.
-- Android device tests: not run.
+- Termux foundation tests: 4 passed on the user's device.
+- Environment detector tests: pending.
+- GitHub Actions CI: not yet confirmed.
 - Production capabilities: none claimed as implemented.

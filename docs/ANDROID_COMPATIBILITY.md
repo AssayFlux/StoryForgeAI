@@ -10,7 +10,22 @@
 
 ## Current verification status
 
-**Not yet Android verified.** This repository foundation has not been executed on the target phone. GitHub Actions and other desktop checks are useful but do not substitute for real-device validation.
+The initial repository foundation passed its four standard-library tests on a Termux device. The environment-detection module is being added and must be exercised on the same device before it is marked Android verified. This does not establish compatibility of future native engines.
+
+## Environment detection
+
+The read-only detector is available from `storyforge.core.environment`:
+
+```python
+from storyforge.core.environment import detect_environment
+
+info = detect_environment()
+print(info)
+```
+
+It reports Android/Termux detection, OS name, normalized CPU architecture, Python version, Android API level when exposed by the Python runtime, total physical memory when procfs provides it, and the Termux prefix.
+
+Detection reads environment variables and `/proc/meminfo`. It does not execute shell commands, install packages, change settings, or access the network. Missing platform information is represented as `None` rather than treated as a fatal error.
 
 ## Engineering constraints
 
@@ -25,7 +40,7 @@
 
 ## Device verification record
 
-No device verification record exists yet. When testing is performed, record:
+No full device verification record exists yet. When testing is performed, record:
 - Device model and chipset (if known)
 - Android version and architecture
 - Termux source/version
