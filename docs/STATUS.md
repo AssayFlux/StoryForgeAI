@@ -21,7 +21,7 @@ Status labels:
 | Android OS/API verification | Blocked | Detector reports API level 24; user must confirm actual Android version before recording Android 15 compatibility |
 | Local data paths and SQLite foundation | Tested; accepted | Phase 2, Task 2; user confirmed Termux verification passed on 2026-11-01; storage paths, SQLite schema v1, project/job persistence and integrity check |
 | llama.cpp build-path evaluation | Completed (research/docs) | Phase 3, Task 1; upstream Termux and Android NDK paths compared in [LLAMA_CPP_EVALUATION.md](LLAMA_CPP_EVALUATION.md); no build performed |
-| Local inference interface | Implemented; Termux verification pending | Phase 3, Task 2; backend-neutral model/request/result types, protocol, typed errors; six focused tests passed in an isolated local harness; no inference backend exists yet |
+| Local inference interface | Android Verified (user-confirmed) | Phase 3, Task 2; user confirmed the latest Termux verification was all good on 2026-11-01; backend-neutral model/request/result types, protocol and typed errors; no inference backend exists yet |
 | Story generation | Planned | Phase 4 |
 | Character and continuity engine | Planned | Phase 5 |
 | Story analysis and scene planning | Planned | Phase 6 |
@@ -42,7 +42,7 @@ Status labels:
 - Environment detection tests: 5 passed on the user's Termux device.
 - Full suite: 9 tests passed on the user's Termux device after pulling `e0df272`.
 - Storage implementation: user confirmed all Termux checks passed on 2026-11-01. The detailed command output was not included in the confirmation.
-- Local inference interface: six focused tests passed in an isolated local test harness. This is not yet a complete repository test run or Termux verification.
+- Local inference interface: user confirmed the requested latest Termux verification was all good on 2026-11-01. The user did not paste command output, so individual test counts and device details are not independently recorded.
 - Observed total memory: 12,188,905,472 bytes; this is total physical memory, not the application's safe memory budget.
 - Observed Android API level: 24; discrepancy with the intended Android 15 target remains unresolved.
 - GitHub Actions CI: not confirmed in this status update.
@@ -50,4 +50,4 @@ Status labels:
 
 ## Next task
 
-**Phase 3, Task 2 — Verify the backend-neutral local inference interface on Termux.** Pull the latest commit, run the full unittest suite, and confirm the new runtime-interface tests pass. Do not compile llama.cpp or download a model yet.
+**Phase 3, Task 3 — Native llama.cpp build feasibility on Termux/ARM64.** Re-check current upstream build instructions and Termux package availability, then prepare a cautious, reproducible native build/smoke test. Do not download a model until the executable builds and its basic smoke test passes.

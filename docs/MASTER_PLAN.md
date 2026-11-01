@@ -169,8 +169,8 @@ Work strictly in order. Each numbered phase is a milestone, not permission to sk
 
 ### Phase 3 — Local AI runtime (llama.cpp / GGUF)
 **Task 1: Build-path evaluation — completed.** Upstream Termux-native and Android NDK paths are compared in [LLAMA_CPP_EVALUATION.md](LLAMA_CPP_EVALUATION.md). No build or model was installed.
-**Task 2: Backend-neutral inference interface — implemented; Termux verification pending.** See [LOCAL_INFERENCE.md](LOCAL_INFERENCE.md). The contract is independent of llama.cpp process flags and native-library details.
-**Next task: run the complete test suite and interface smoke test on the user's Termux device.**
+**Task 2: Backend-neutral inference interface — accepted after user-confirmed Termux verification (2026-11-01).** See [LOCAL_INFERENCE.md](LOCAL_INFERENCE.md). The contract is independent of llama.cpp process flags and native-library details. No inference backend or model is implemented yet.
+**Next task: native llama.cpp build feasibility and smoke test in Termux on ARM64.** Re-check current upstream instructions and package availability before giving device commands. Do not download a model until the executable builds and its basic smoke test passes.
 - Build or install only through documented, reproducible steps; no unverified install claims.
 - Add local model registry, explicit import/download, license metadata, checksum and integrity validation.
 - Benchmark small candidate models on device; record peak memory, tokens/sec, startup time, heat and battery observations.
@@ -289,9 +289,9 @@ A fully generative text-to-video model is not a prerequisite for the first compl
 
 ## 9. Current next action
 
-Phase 1 and Phase 2 Tasks 1–2 are accepted. Phase 3 Task 1 (build-path evaluation) is documented. Phase 3 Task 2 (backend-neutral inference contract) is implemented and has passed six focused tests in an isolated local test harness.
+Phase 1 and Phase 2 Tasks 1–2 are accepted. Phase 3 Task 1 (build-path evaluation) is documented. Phase 3 Task 2 (backend-neutral inference contract) is implemented and the user confirmed its Termux verification was all good on 2026-11-01. The confirmation did not include raw command output, so no additional test count or device details are asserted.
 
-**Immediate next task: Phase 3, Task 2 — verify the inference contract on the user's Termux device.** Pull the latest commit, run the complete unittest suite, and confirm the runtime-interface tests pass. Do not build llama.cpp or download a model until this interface is accepted on device. The Android API-level discrepancy remains open and must be resolved before claiming Android 15 compatibility.
+**Immediate next task: Phase 3, Task 3 — native llama.cpp build feasibility and smoke test on Termux/ARM64.** Re-check current upstream instructions and package availability, then perform a cautious native build. Do not download a model until the executable builds and its basic smoke test passes. The Android API-level discrepancy remains open and must be resolved before claiming Android 15 compatibility.
 
 ---
 
